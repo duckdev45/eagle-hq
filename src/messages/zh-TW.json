@@ -1,0 +1,8 @@
+{
+  "HomePage": {
+    "title": "Eagle HQ",
+    "subtitle": "哈囉世界",
+    "toggleTheme": "切換模式",
+    "currentTheme": "目前模式：{theme}"
+  }
+}

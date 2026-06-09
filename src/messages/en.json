@@ -1,0 +1,8 @@
+{
+  "HomePage": {
+    "title": "Eagle HQ",
+    "subtitle": "Hello World",
+    "toggleTheme": "Toggle Theme",
+    "currentTheme": "Current Theme: {theme}"
+  }
+}
