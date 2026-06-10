@@ -8,9 +8,11 @@ interface BlackboardProps {
   sprint: Sprint
   led: boolean
   lang: Lang
+  open: boolean
+  onToggle: () => void
 }
 
-export function Blackboard({ sprint, led, lang }: BlackboardProps) {
+export function Blackboard({ sprint, led, lang, open, onToggle }: BlackboardProps) {
   const t = HQ_I18N[lang]
   const zh = lang === 'zh'
 
@@ -20,6 +22,8 @@ export function Blackboard({ sprint, led, lang }: BlackboardProps) {
       zhTitle={t.sprint}
       className='blackboard'
       bodyStyle={{ padding: 10 }}
+      open={open}
+      onToggle={onToggle}
     >
       <div className={`chalk-area${led ? ' led' : ''}`}>
         <div className='wk'>

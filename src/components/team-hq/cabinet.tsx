@@ -27,6 +27,7 @@ export function Cabinet() {
   const [newProj, setNewProj] = useState(false)
   const [logOpen, setLogOpen] = useState(false)
   const [tweaksOpen, setTweaksOpen] = useState(false)
+  const [railOpen, setRailOpen] = useState<'projects' | 'sprint'>('projects')
   const [clock, setClock] = useState('')
 
   // Letterbox scaler
@@ -124,8 +125,16 @@ export function Cabinet() {
                 onPick={setPickProject}
                 onAdd={() => setNewProj(true)}
                 lang={lang}
+                open={railOpen === 'projects'}
+                onToggle={() => setRailOpen('projects')}
               />
-              <Blackboard sprint={SEED_SPRINT} led={tweaks.board === 'led'} lang={lang} />
+              <Blackboard
+                sprint={SEED_SPRINT}
+                led={tweaks.board === 'led'}
+                lang={lang}
+                open={railOpen === 'sprint'}
+                onToggle={() => setRailOpen('sprint')}
+              />
             </div>
           </div>
 

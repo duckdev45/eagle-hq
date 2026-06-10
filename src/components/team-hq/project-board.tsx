@@ -8,11 +8,13 @@ interface ProjectBoardProps {
   onPick: (id: string) => void
   onAdd: () => void
   lang: Lang
+  open: boolean
+  onToggle: () => void
 }
 
 const LAMP_TXT: Record<string, string> = { g: '🟢 ', y: '🟡 ', r: '🔴 ' }
 
-export function ProjectBoard({ projects, onPick, onAdd, lang }: ProjectBoardProps) {
+export function ProjectBoard({ projects, onPick, onAdd, lang, open, onToggle }: ProjectBoardProps) {
   const t = HQ_I18N[lang]
   const zh = lang === 'zh'
   const reds = projects.filter((p) => p.light === 'r')
@@ -27,6 +29,8 @@ export function ProjectBoard({ projects, onPick, onAdd, lang }: ProjectBoardProp
       zhTitle={t.projects}
       headerRight={addButton}
       className='lights'
+      open={open}
+      onToggle={onToggle}
     >
       {reds.length > 0 && (
         <div className='r-banner'>

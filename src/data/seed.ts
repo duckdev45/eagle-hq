@@ -53,14 +53,14 @@ export const SEED_TEAM: TeamMember[] = [
   },
   {
     id: 'jared', name: 'JARED', role: 'UI / UX', role_en: 'UI / UX',
-    avatar: '/avatars/jared.png', x: 24, y: 54, status: '驗收中',
+    avatar: '/avatars/jared.png', x: 30, y: 56, status: '驗收中',
     task: 'app-onsite 拍照流程驗收', task_en: 'Reviewing capture flow',
     note: '等 Duck 修兩個對齊', note_en: 'Waiting on 2 alignment fixes',
     updated_at: '2026-06-09T11:05:00',
   },
   {
     id: 'duck', name: 'DUCK', role: '前端', role_en: 'Frontend',
-    avatar: '/avatars/duck.png', x: 58, y: 54, status: '被卡住',
+    avatar: '/avatars/duck.png', x: 66, y: 56, status: '被卡住',
     task: 'data-training 標註介面', task_en: 'data-training labeling UI',
     note: '廠商資料還沒進來，卡住了', note_en: 'Blocked — vendor data not in yet',
     updated_at: '2026-06-09T11:30:00',

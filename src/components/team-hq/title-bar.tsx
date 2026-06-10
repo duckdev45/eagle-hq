@@ -13,10 +13,6 @@ export function TitleBar({ lang, syncTs, clock, onLangChange, onTweaksOpen }: Ti
   const t = HQ_I18N[lang]
   return (
     <div className='titlebar'>
-      <div className='mark'>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src='/logo-square.svg' alt='Eagle AI' />
-      </div>
       <div className='title-txt'>
         <span className='t1'>EAGLE AI · TEAM HQ</span>
         {/*<span className='t2'>{t.subtitle}</span>*/}

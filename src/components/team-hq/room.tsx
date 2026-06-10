@@ -55,8 +55,39 @@ export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday }: Room
       <div className='decor shelf' style={{ left: '45%', top: '66%', transform: 'translateX(-50%)' }}>
         <span /><span /><span /><span /><span />
       </div>
-      <div className='decor coffee' style={{ right: '3%', top: '52%' }}>
-        <div className='machine' /><div className='lbl'>COFFEE</div>
+      <div className='decor coffee' style={{ right: '3%', top: '55%' }}>
+        <div className='cm'>
+          <span className='cm-tank' />
+          <span className='cm-col' />
+          <span className='cm-head' />
+          <span className='drip' />
+          <span className='cm-pot'><i className='brew' /></span>
+          <span className='cm-base' />
+          <span className='steam s1' /><span className='steam s2' />
+        </div>
+        <div className='lbl'>COFFEE</div>
+      </div>
+
+      {/* office cats */}
+      <div className='cat cat-orange' style={{ left: '9%', top: '60%' }}>
+        <div className='c'>
+          <span className='tail' /><span className='body' />
+          <span className='leg l1' /><span className='leg l2' />
+          <span className='head' /><span className='eye' />
+        </div>
+      </div>
+      <div className='cat cat-black sleep' style={{ left: '46%', top: '79%' }}>
+        <div className='c'>
+          <span className='tail' /><span className='body' />
+          <span className='head' /><span className='zz'>zz</span>
+        </div>
+      </div>
+      <div className='cat cat-white walk' style={{ left: '30%', top: '48%' }}>
+        <div className='c'>
+          <span className='tail' /><span className='body' />
+          <span className='leg l1' /><span className='leg l2' />
+          <span className='head' /><span className='eye' />
+        </div>
       </div>
 
       {/* punch clock / daily log */}
