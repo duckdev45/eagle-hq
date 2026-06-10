@@ -7,7 +7,7 @@ interface ScrimProps {
 }
 
 export function Scrim({ onClose, children, align = 'center' }: ScrimProps) {
-  const style: CSSProperties = align === 'end' ? { justifyItems: 'center' } : {}
+  const style: CSSProperties = align === 'end' ? { justifyItems: 'end' } : {}
   return (
     <div className='scrim' style={style} onClick={onClose}>
       {children}
