@@ -400,6 +400,19 @@
     pointer-events: none;
 }
 
+/* boss summary written on the whiteboard */
+.wb-note {
+    position: absolute;
+    z-index: 6;
+    font-size: 9px;
+    line-height: 1.5;
+    text-align: center;
+    color: #2b3440;
+    text-shadow: none;
+    pointer-events: none;
+    word-break: break-all;
+}
+
 /* ── WALL + FLOOR DECOR ─────────────────────────────────────────────── */
 .decor {
     position: absolute;
@@ -865,6 +878,17 @@
     transform: translateY(2px);
 }
 
+/* data-source chip shown instead of the add button in Jira mode */
+.jira-src {
+    background: #11140f;
+    color: #4f9cf0;
+    border: 3px solid var(--chrome-line);
+    padding: 3px 7px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
 .board .body {
     padding: 12px;
     overflow: auto;
@@ -1006,13 +1030,19 @@
 
 .chalk-area .wk .w1 {
     font-family: var(--font-px, monospace);
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 1px;
 }
 
 .chalk-area .wk .w2 {
-    font-size: 13px;
-    opacity: .85;
+    font-size: 14px;
+}
+
+/* two-row header for Jira sprint mode (name + dates won't fit on one line) */
+.chalk-area .wk.wk-stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .line {

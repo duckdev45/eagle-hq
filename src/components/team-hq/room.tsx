@@ -31,11 +31,12 @@ interface RoomProps {
   lang: Lang
   onOpenLog: () => void
   loggedToday: number
+  bossNote?: string | null
 }
 
 const MOVE_KEYS = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd']
 
-export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday }: RoomProps) {
+export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday, bossNote }: RoomProps) {
   const t = HQ_I18N[lang]
   const roomRef = useRef<HTMLDivElement>(null)
   const containerRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -195,6 +196,13 @@ export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday }: Room
           draggable={false}
         />
       ))}
+
+      {/* boss summary on the whiteboard (furniture at 300,20 130×84) */}
+      {bossNote && (
+        <div className='wb-note' style={{ left: 308, top: 32, width: 114 }}>
+          {bossNote}
+        </div>
+      )}
 
       {/* office cats */}
       <div className='cat cat-orange' style={{ left: '9%', top: '60%', zIndex: 5 }}>
