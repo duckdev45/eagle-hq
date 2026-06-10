@@ -12,7 +12,10 @@ import type { JiraSnapshot } from '@/types/jira'
  */
 
 const BLOB_PATH = 'eagle-hq/snapshot.json'
-const FILE_PATH = path.join(process.cwd(), '.cache', 'snapshot.json')
+/* on Vercel without Blob, /tmp is the only writable dir — per-instance & ephemeral, lost on cold start */
+const FILE_PATH = process.env.VERCEL
+  ? '/tmp/eagle-hq-snapshot.json'
+  : path.join(process.cwd(), '.cache', 'snapshot.json')
 
 function useBlob() {
   return !!process.env.BLOB_READ_WRITE_TOKEN
