@@ -56,6 +56,9 @@ interface HqStrings {
   unassigned: string
   teamLog: string
   noLogs: string
+  backlog: string
+  noBacklog: string
+  noEpic: string
 }
 
 export const HQ_I18N: Record<Lang, HqStrings> = {
@@ -74,11 +77,12 @@ export const HQ_I18N: Record<Lang, HqStrings> = {
     daily: '今天做了什麼', dailyPlace: '簡單敘述：今天完成或需要協助',
     dailyOpt: '（送出即記錄到今日日誌）',
     logTitle: 'Daily Log', today: 'today', recent: 'Recent', logged: '已紀錄', pending: '未紀錄',
-    writeToday: '寫今天的紀錄', noEntry: '今天還沒紀錄', clock: '打卡鐘', delConfirm: '確定刪除？',
+    writeToday: '寫今天的紀錄', noEntry: '今天還沒紀錄', clock: 'Punch clock', delConfirm: '確定刪除？',
     progress: '工作進度', progressOpt: '（變更會回寫 Jira）', manualTask: '— 手動輸入 —',
     logPreview: '送出後記錄', saving: '回寫中…',
     tasksBoard: '任務清單', doneTag: '已完成', unassigned: '未指派',
     teamLog: 'TEAM LOG', noLogs: '這段期間沒有紀錄',
+    backlog: 'BACKLOG', noBacklog: '目前沒有待辦項目', noEpic: '未分類',
   },
   en: {
     subtitle: 'Team Command Center — site status board',
@@ -100,5 +104,6 @@ export const HQ_I18N: Record<Lang, HqStrings> = {
     logPreview: 'Will log', saving: 'Saving…',
     tasksBoard: 'Sub-tasks', doneTag: 'DONE', unassigned: 'unassigned',
     teamLog: 'TEAM LOG', noLogs: 'No entries in this period',
+    backlog: 'BACKLOG', noBacklog: 'Backlog is empty', noEpic: 'No epic',
   },
 }

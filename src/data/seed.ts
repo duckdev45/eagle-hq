@@ -1,7 +1,7 @@
 import type { FloorThemeDef, LogEntry, Project, Sprint, StatusMeta, TeamMember, Tweaks } from '@/types/team'
 
 export const STATUS: Record<string, StatusMeta> = {
-  '施工中':  { color: 'var(--st-work)',   away: false, kind: 'work',        en: 'Building'   },
+  '開發中':  { color: 'var(--st-work)',   away: false, kind: 'work',        en: 'wip'   },
   '驗收中':  { color: 'var(--st-review)', away: false, kind: 'review',      en: 'Reviewing'  },
   '被卡住':  { color: 'var(--st-block)',  away: false, kind: 'block',       en: 'Blocked'    },
   '休息中':  { color: 'var(--st-rest)',   away: true,  kind: 'rest',        en: 'On break'   },
@@ -12,7 +12,7 @@ export const STATUS: Record<string, StatusMeta> = {
   '查閱中':  { color: 'var(--st-rest)',   away: false, kind: 'review-only', en: 'Overseeing' },
 }
 
-export const STATUS_ORDER = ['施工中', '在家工作', '驗收中', '被卡住', '休息中', '外出', '休假', '病假']
+export const STATUS_ORDER = ['開發中', '在家工作', '驗收中', '被卡住', '休假']
 
 export const PROJ_DEF: Record<string, { zh: string; en: string }> = {
   g: { zh: '照計畫進行', en: 'On track' },
@@ -39,14 +39,14 @@ export const SEED_TEAM: TeamMember[] = [
   },
   {
     id: 'margaret', name: 'MARGARET', role: '建築師 · PO', role_en: 'Architect · Product Owner',
-    avatar: '/avatars/margaret.png', x: 50, y: 15, status: '施工中',
+    avatar: '/avatars/margaret.png', x: 50, y: 15, status: '開發中',
     task: '整理本週待辦', task_en: 'Grooming the backlog',
     note: '和廠商確認 data 規格中', note_en: 'Confirming data spec w/ vendor',
     updated_at: '2026-06-09T10:20:00',
   },
   {
     id: 'lee', name: 'LEE', role: '後端 · Team Lead', role_en: 'Backend · Team Lead',
-    avatar: '/avatars/lee.png', x: 83, y: 15, status: '施工中',
+    avatar: '/avatars/lee.png', x: 83, y: 15, status: '開發中',
     task: 'site-report API 串接', task_en: '',
     note: '', note_en: '',
     updated_at: '2026-06-09T10:48:00',

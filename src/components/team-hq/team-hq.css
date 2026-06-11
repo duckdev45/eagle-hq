@@ -466,6 +466,7 @@
 }
 
 .ws .sprite {
+    position: relative;
     width: 72px;
     height: 96px;
     display: block;
@@ -475,6 +476,73 @@
 
 .ws.away .sprite {
     filter: grayscale(.85) brightness(.62) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+}
+
+/* 休假：無敵星彩虹光暈（保留原本配色，只有柔和的彩色光環在循環） */
+.ws.vac .sprite {
+    animation: vac-aura 2.4s linear infinite;
+}
+
+@keyframes vac-aura {
+    0%, 100% {
+        filter: brightness(1.08) drop-shadow(0 0 4px rgba(255, 122, 122, .9)) drop-shadow(0 0 10px rgba(255, 122, 122, .45)) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+    }
+    20% {
+        filter: brightness(1.12) drop-shadow(0 0 4px rgba(255, 217, 122, .9)) drop-shadow(0 0 10px rgba(255, 217, 122, .45)) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+    }
+    40% {
+        filter: brightness(1.08) drop-shadow(0 0 4px rgba(122, 255, 158, .9)) drop-shadow(0 0 10px rgba(122, 255, 158, .45)) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+    }
+    60% {
+        filter: brightness(1.12) drop-shadow(0 0 4px rgba(122, 217, 255, .9)) drop-shadow(0 0 10px rgba(122, 217, 255, .45)) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+    }
+    80% {
+        filter: brightness(1.08) drop-shadow(0 0 4px rgba(196, 122, 255, .9)) drop-shadow(0 0 10px rgba(196, 122, 255, .45)) drop-shadow(0 6px 4px rgba(0, 0, 0, .35));
+    }
+}
+
+/* 角色旁的閃爍星星 */
+.ws.vac::before,
+.ws.vac::after {
+    position: absolute;
+    z-index: 41;
+    font-family: var(--font-px, monospace);
+    pointer-events: none;
+    animation: vac-twinkle 1.2s steps(1) infinite;
+}
+
+.ws.vac::before {
+    content: '✦';
+    top: 10px;
+    left: -8px;
+    font-size: 12px;
+    color: #ffe27a;
+}
+
+.ws.vac::after {
+    content: '✦';
+    top: 40px;
+    right: -6px;
+    font-size: 9px;
+    color: #9adfff;
+    animation-delay: .6s;
+}
+
+@keyframes vac-twinkle {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0;
+        transform: scale(.5);
+    }
+}
+
+.noidle .ws.vac .sprite,
+.noidle .ws.vac::before,
+.noidle .ws.vac::after {
+    animation: none;
 }
 
 .ws:hover .sprite {
@@ -497,6 +565,7 @@
 
 .badge {
     position: absolute;
+    z-index: 60;
     bottom: calc(100% + 4px);
     left: 50%;
     transform: translateX(-50%);
@@ -525,6 +594,7 @@
 
 .nameplate {
     position: absolute;
+    z-index: 60;
     top: calc(100% + 2px);
     left: 50%;
     transform: translateX(-50%);
@@ -546,19 +616,19 @@
 
 .nameplate .task-chip {
     margin-top: 6px;
-    max-width: 280px;
+    max-width: 180px;
     text-align: center;
     font-size: 13px;
     font-weight: 700;
     line-height: 1.4;
     color: #3a2f12;
     background: #f6e27a;
-    padding: 7px 11px;
+    padding: 5px 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     box-shadow: 2px 3px 0 rgba(0, 0, 0, .4);
-    border-top: 6px solid rgba(0, 0, 0, .08);
+    border-top: 6px solid rgba(0, 0, 0, .38);
 }
 
 .nameplate .task-chip.leave {
@@ -586,6 +656,32 @@
 
 .office-item.clickable:hover {
     filter: brightness(1.35) drop-shadow(0 0 5px rgba(255, 220, 120, .55));
+}
+
+/* pixel label under clickable items */
+.item-lbl {
+    position: absolute;
+    text-align: center;
+    font-family: var(--font-px, monospace);
+    font-size: 12px;
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
+.lbl-glow {
+    color: #ffd97a;
+    animation: lbl-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes lbl-glow {
+    0%, 100% {
+        opacity: .65;
+        text-shadow: 0 0 3px rgba(255, 217, 122, .25);
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 7px rgba(255, 217, 122, .9), 0 0 14px rgba(255, 173, 64, .5);
+    }
 }
 
 /* boss summary written on the whiteboard */
@@ -669,8 +765,8 @@
 .pclock .lbl {
     text-align: center;
     font-family: var(--font-px, monospace);
-    font-size: 8px;
-    color: var(--ink-mute);
+    font-size: 9px;
+    letter-spacing: 1px;
     margin-top: 5px;
 }
 
@@ -1300,7 +1396,7 @@
 .scrim {
     position: absolute;
     inset: 0;
-    z-index: 40;
+    z-index: 120;
     background: rgba(12, 13, 16, .82);
     display: grid;
     place-items: center center;
@@ -1320,6 +1416,9 @@
 .sheet {
     width: 520px;
     max-width: 92%;
+    max-height: 88%;
+    display: flex;
+    flex-direction: column;
     background: var(--chrome-face);
     border: 4px solid var(--chrome-bezel);
     box-shadow: 0 0 0 4px #2a2723, 0 24px 64px rgba(0, 0, 0, .7), inset 0 0 0 2px #3c3836;
@@ -1332,6 +1431,7 @@
     padding: 16px;
     border-bottom: 3px solid var(--chrome-bezel);
     background: linear-gradient(#23262b, #16181c);
+    flex: none;
 }
 
 .sheet header .av {
@@ -1383,6 +1483,8 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 /* ── PIXEL FIELD ────────────────────────────────────────────────────── */
@@ -1583,6 +1685,10 @@
     grid-template-columns: repeat(3, 1fr);
 }
 
+.opt-grid.cols-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
 .stbtn {
     display: flex;
     flex-direction: column;
@@ -1648,6 +1754,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: none;
     padding: 16px 18px;
     border-top: 3px solid var(--chrome-bezel);
 }
@@ -1978,6 +2085,23 @@
     font-size: 15px;
     color: var(--ink-dim);
     line-height: 1.4;
+}
+
+/* backlog（置物櫃）清單 */
+.bl-row {
+    grid-template-columns: 90px 1fr auto;
+    cursor: pointer;
+}
+
+.bl-row:hover .ht {
+    color: var(--ink);
+}
+
+.bl-row .bl-st {
+    font-family: var(--font-px, monospace);
+    font-size: 9px;
+    color: var(--ink-mute);
+    white-space: nowrap;
 }
 
 /* team log（牆上時鐘）期間檢視 */

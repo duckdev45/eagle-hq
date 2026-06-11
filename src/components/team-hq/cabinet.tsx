@@ -10,6 +10,7 @@ import { useJiraSnapshot } from '@/hooks/use-jira-snapshot'
 import { pushTeamState, toRemoteStatus, useTeamSync } from '@/hooks/use-team-sync'
 import { useTeamStore } from '@/store/team.store'
 
+import { BacklogSheet } from './backlog-sheet'
 import { Blackboard } from './blackboard'
 import { DailyLog } from './daily-log'
 import { LoadingScreen } from './loading-screen'
@@ -31,7 +32,7 @@ function applyJiraLoad(team: TeamMember[], members: MemberLoad[] | undefined): T
   return team.map((m) => {
     const load = byId.get(m.id)
     if (!load || STATUS[m.status]?.away) return m
-    const status = load.red > 0 ? '被卡住' : load.yellow > 0 ? '驗收中' : '施工中'
+    const status = load.red > 0 ? '被卡住' : load.yellow > 0 ? '驗收中' : '開發中'
     return {
       ...m,
       status,
@@ -51,6 +52,7 @@ export function Cabinet() {
   const [newProj, setNewProj] = useState(false)
   const [logOpen, setLogOpen] = useState(false)
   const [teamLogOpen, setTeamLogOpen] = useState(false)
+  const [backlogOpen, setBacklogOpen] = useState(false)
   const [tweaksOpen, setTweaksOpen] = useState(false)
   const [railOpen, setRailOpen] = useState<'projects' | 'sprint' | 'tasks'>('sprint')
   const [clock, setClock] = useState('')
@@ -201,6 +203,7 @@ export function Cabinet() {
               lang={lang}
               onOpenLog={() => setLogOpen(true)}
               onOpenTeamLog={() => setTeamLogOpen(true)}
+              onOpenBacklog={() => setBacklogOpen(true)}
               loggedToday={loggedToday}
               bossNote={bossNote}
             />
@@ -263,6 +266,14 @@ export function Cabinet() {
               lang={lang}
               onSave={handleSaveProject}
               onClose={() => setNewProj(false)}
+            />
+          )}
+          {backlogOpen && (
+            <BacklogSheet
+              items={snapshot?.backlog ?? []}
+              baseUrl={snapshot?.baseUrl}
+              lang={lang}
+              onClose={() => setBacklogOpen(false)}
             />
           )}
           {teamLogOpen && (

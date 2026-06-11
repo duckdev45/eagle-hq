@@ -14,7 +14,7 @@ interface MemberSpriteProps {
 }
 
 export function MemberSprite({ m, lang, selected, onSelect, onOpen, setContainerRef, setImgRef }: MemberSpriteProps) {
-  const meta = STATUS[m.status] ?? STATUS['施工中']
+  const meta = STATUS[m.status] ?? STATUS['開發中']
   const away = meta.away
   const isVacation = m.status === '休假'
   const leave = meta.kind === 'leave'
@@ -28,6 +28,7 @@ export function MemberSprite({ m, lang, selected, onSelect, onOpen, setContainer
     'ws',
     selected && 'sel',
     away && !isVacation && 'away',
+    isVacation && 'vac',
     meta.kind === 'wfh' && 'wfh',
   ]
     .filter(Boolean)
@@ -37,7 +38,7 @@ export function MemberSprite({ m, lang, selected, onSelect, onOpen, setContainer
     <div
       className={cls}
       ref={setContainerRef}
-      style={{ left: start.x, top: start.y, zIndex: zOf(start.y), '--accent': meta.color } as React.CSSProperties}
+      style={{ left: start.x, top: start.y, '--accent': meta.color } as React.CSSProperties}
       onClick={(e) => { e.stopPropagation(); onSelect() }}
       onDoubleClick={(e) => { e.stopPropagation(); onOpen() }}
       role='button'
@@ -56,6 +57,7 @@ export function MemberSprite({ m, lang, selected, onSelect, onOpen, setContainer
         alt={m.name}
         width={SPRITE_W}
         height={SPRITE_H}
+        style={{ zIndex: zOf(start.y) }}
         draggable={false}
       />
       <div className='nameplate'>

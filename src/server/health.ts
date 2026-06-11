@@ -1,6 +1,6 @@
 import 'server-only'
 
-import type { EpicHealth, HealthLight, JiraIssueLite, JiraSnapshot, MemberLoad, SprintHealth, SprintTask } from '@/types/jira'
+import type { BacklogItem, EpicHealth, HealthLight, JiraIssueLite, JiraSnapshot, MemberLoad, SprintHealth, SprintTask } from '@/types/jira'
 import { STATUS_DONE, isDevDone } from '@/types/jira'
 import type { RawJiraIssue, RawSprint } from '@/server/jira'
 
@@ -183,6 +183,7 @@ export function buildSnapshot(input: {
   epics: RawJiraIssue[]
   children: RawJiraIssue[]
   sprint?: { sprint: RawSprint; issues: RawJiraIssue[]; subtasks: RawJiraIssue[] } | null
+  backlog?: RawJiraIssue[]
   stuckTbc: Set<string>
   stuckVerify: Set<string>
   tbcStuckDays: number
@@ -191,6 +192,16 @@ export function buildSnapshot(input: {
   const today = new Date().toISOString().slice(0, 10)
   const judge = (raw: RawJiraIssue) =>
     judgeIssue(raw, input.stuckTbc, input.stuckVerify, input.tbcStuckDays, input.verifyStuckDays, today)
+
+  const epicSummaries = new Map(input.epics.map((e) => [e.key, e.fields.summary]))
+  const backlog: BacklogItem[] = (input.backlog ?? []).map((raw) => {
+    const epicKey = raw.fields.parent?.key ?? null
+    return {
+      ...judge(raw),
+      epicKey,
+      epicSummary: epicKey ? epicSummaries.get(epicKey) ?? null : null,
+    }
+  })
 
   const byEpic = new Map<string, JiraIssueLite[]>()
   for (const raw of input.children) {
@@ -219,10 +230,7 @@ export function buildSnapshot(input: {
     },
     epics,
     members: aggregateMembers(epics),
-    sprint: judgeSprint(
-      input.sprint ?? null,
-      judge,
-      new Map(input.epics.map((e) => [e.key, e.fields.summary]))
-    ),
+    sprint: judgeSprint(input.sprint ?? null, judge, epicSummaries),
+    backlog,
   }
 }

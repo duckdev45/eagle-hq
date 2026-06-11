@@ -120,6 +120,31 @@ export async function fetchLatestSprint(
   return { sprint, issues, subtasks }
 }
 
+/** board backlog（不在任何 sprint 的票），排除子任務與已完成 */
+export async function fetchBacklog(cfg: JiraConfig): Promise<RawJiraIssue[]> {
+  const boards = await agileGet<{ values: { id: number }[] }>(
+    cfg,
+    `/rest/agile/1.0/board?projectKeyOrId=${encodeURIComponent(cfg.projectKey)}`
+  )
+  const board = boards.values?.[0]
+  if (!board) return []
+
+  const jql = encodeURIComponent('issuetype not in subTaskIssueTypes() AND statusCategory != Done')
+  const issues: RawJiraIssue[] = []
+  let startAt = 0
+  for (;;) {
+    const page = await agileGet<{ issues?: RawJiraIssue[]; total: number }>(
+      cfg,
+      `/rest/agile/1.0/board/${board.id}/backlog?startAt=${startAt}&maxResults=100&fields=${FIELDS.join(',')}&jql=${jql}`
+    )
+    const batch = page.issues ?? []
+    issues.push(...batch)
+    startAt += batch.length
+    if (batch.length === 0 || startAt >= page.total) break
+  }
+  return issues
+}
+
 interface RawTransition {
   id: string
   name: string

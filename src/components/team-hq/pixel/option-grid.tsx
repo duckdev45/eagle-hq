@@ -8,12 +8,12 @@ interface OptionGridProps {
   options: Option[]
   selected: string
   onSelect: (value: string) => void
-  columns?: 3 | 4
+  columns?: 3 | 4 | 5
 }
 
 export function OptionGrid({ options, selected, onSelect, columns = 4 }: OptionGridProps) {
   return (
-    <div className={`opt-grid${columns === 3 ? ' cols-3' : ''}`}>
+    <div className={`opt-grid${columns === 3 ? ' cols-3' : columns === 5 ? ' cols-5' : ''}`}>
       {options.map((o) => (
         <button
           key={o.value}

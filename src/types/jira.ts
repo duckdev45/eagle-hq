@@ -76,6 +76,11 @@ export interface MemberLoad {
   total: number
 }
 
+export interface BacklogItem extends JiraIssueLite {
+  epicKey: string | null
+  epicSummary: string | null
+}
+
 export interface JiraSnapshot {
   generatedAt: string
   projectKey: string
@@ -90,4 +95,5 @@ export interface JiraSnapshot {
   epics: EpicHealth[]
   members: MemberLoad[]
   sprint: SprintHealth | null
+  backlog?: BacklogItem[]
 }

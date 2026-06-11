@@ -161,7 +161,7 @@ export function MemberSheet({ m, tasks, todayLog, lang, onSave, onClose }: Membe
       <PixelSheet headerContent={header} footer={footer} accent={accent} onClose={onClose}>
         <div className='pfield'>
           <label>{t.status}</label>
-          <OptionGrid options={statusOptions} selected={status} onSelect={setStatus} />
+          <OptionGrid options={statusOptions} selected={status} onSelect={setStatus} columns={5} />
         </div>
         {isLeave && (
           <div className='pfield leave-date'>
