@@ -52,6 +52,185 @@
     image-rendering: pixelated;
 }
 
+/* ── 8-BIT 開機載入畫面（蓋在機台畫面上，跟著一起縮放） ─────────── */
+.boot-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 999;
+    background: #0c0d10;
+    border: 4px solid var(--chrome-bezel);
+    box-shadow: inset 0 0 0 2px #3c3836, inset 0 0 80px rgba(0, 0, 0, .6);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-px, monospace);
+}
+
+.boot-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 360px;
+    max-width: 86vw;
+}
+
+.boot-logo {
+    width: 76px;
+    height: 76px;
+    image-rendering: pixelated;
+    animation: boot-bounce 1s steps(2, end) infinite;
+}
+
+.boot-title {
+    font-size: 16px;
+    color: var(--ink);
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.boot-bar {
+    width: 100%;
+    height: 24px;
+    border: 3px solid var(--chrome-line);
+    background: #11140f;
+    padding: 4px;
+}
+
+.boot-bar .fill {
+    display: block;
+    height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--st-work) 0 10px,
+        transparent 10px 14px
+    );
+    animation: boot-fill 1.4s steps(12, end) infinite;
+}
+
+/* 載入完成：進度條停在 100% */
+.boot-bar.full .fill {
+    width: 100%;
+    animation: none;
+}
+
+.boot-rows {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 10px;
+}
+
+.boot-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--ink-dim);
+    letter-spacing: 1px;
+}
+
+.boot-row .dots {
+    flex: 1;
+    border-bottom: 2px dotted var(--chrome-line);
+}
+
+.boot-row .ok {
+    color: var(--st-work);
+}
+
+.boot-row .wait {
+    color: var(--ink-mute);
+    animation: boot-blink .8s steps(1) infinite;
+}
+
+.boot-blink {
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 3px;
+    animation: boot-blink 1s steps(1) infinite;
+}
+
+/* 密碼鎖（loading 完成後顯示） */
+.boot-pass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.boot-pass-label {
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 3px;
+    animation: boot-blink 1s steps(1) infinite;
+}
+
+.boot-pass.err .boot-pass-label {
+    color: var(--lite-red, #e05a4e);
+    animation: boot-shake .3s steps(2) 2;
+}
+
+.boot-pass-cells {
+    display: flex;
+    gap: 10px;
+    cursor: text;
+}
+
+.boot-pass-cells .cell {
+    width: 38px;
+    height: 46px;
+    border: 3px solid var(--chrome-line);
+    background: #11140f;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    color: var(--st-work);
+}
+
+.boot-pass-cells .cell.cur {
+    border-color: var(--st-work);
+    animation: boot-blink .8s steps(1) infinite;
+}
+
+.boot-pass.err .cell {
+    border-color: var(--lite-red, #e05a4e);
+}
+
+/* 實際輸入框隱藏，僅接鍵盤 */
+.boot-pass-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes boot-shake {
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* CRT 掃描線 */
+.boot-scan {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .28) 0 2px, transparent 2px 4px);
+}
+
+@keyframes boot-fill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes boot-blink {
+    50% { opacity: 0; }
+}
+
+@keyframes boot-bounce {
+    50% { transform: translateY(-6px); }
+}
+
 .hq-scaler img {
     image-rendering: pixelated;
 }

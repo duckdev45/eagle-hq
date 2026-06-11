@@ -24,11 +24,15 @@ export async function GET() {
     }
     const data = (await res.json()) as { error?: string; statuses?: unknown[]; logs?: unknown[] }
     if (data.error) return NextResponse.json({ error: data.error }, { status: 502 })
-    /* 舊版 Apps Script 可能把日期切成 "Thu Jun 11"（丟失年份、無法還原）— 這種列剔除；Sheet 內原始資料不受影響 */
+    /* 舊版 Apps Script 可能把日期切成 "Thu Jun 11"（丟失年份）— 用 created_at 推回台北時區日期救援 */
     const logs = (data.logs ?? []).flatMap((l) => {
-      const date = String((l as { date?: unknown }).date ?? '')
-      const m = date.match(/^(\d{4}-\d{2}-\d{2})/)
-      return m ? [{ ...(l as object), date: m[1] }] : []
+      const row = l as { date?: unknown; created_at?: unknown }
+      const m = String(row.date ?? '').match(/^(\d{4}-\d{2}-\d{2})/)
+      if (m) return [{ ...(l as object), date: m[1] }]
+      const created = new Date(String(row.created_at ?? ''))
+      if (isNaN(created.getTime())) return []
+      const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei' }).format(created)
+      return [{ ...(l as object), date }]
     })
     return NextResponse.json({ statuses: data.statuses ?? [], logs })
   } catch (err) {

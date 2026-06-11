@@ -7,9 +7,9 @@ import { useTeamStore } from '@/store/team.store'
 import type { LogEntry, RemoteMemberStatus, RemoteTeamState, TeamMember } from '@/types/team'
 
 /* 定時拉取 Sheet 端狀態並合併進 store；未設定 GSHEET_* 時（503）安靜停用 */
-export function useTeamSync() {
+export function useTeamSync(): { loading: boolean } {
   const applyRemote = useTeamStore((s) => s.applyRemote)
-  const { data } = useQuery<RemoteTeamState | null>({
+  const { data, isLoading } = useQuery<RemoteTeamState | null>({
     queryKey: ['team-state'],
     queryFn: async () => {
       const res = await fetch('/api/team-state', { cache: 'no-store' })
@@ -24,6 +24,8 @@ export function useTeamSync() {
   useEffect(() => {
     if (data) applyRemote(data)
   }, [data, applyRemote])
+
+  return { loading: isLoading }
 }
 
 export function toRemoteStatus(m: TeamMember): RemoteMemberStatus {

@@ -12,6 +12,7 @@ import { useTeamStore } from '@/store/team.store'
 
 import { Blackboard } from './blackboard'
 import { DailyLog } from './daily-log'
+import { LoadingScreen } from './loading-screen'
 import { MemberSheet, type JiraTransitionReq } from './member-sheet'
 import { ProjectBoard } from './project-board'
 import { ProjectSheet } from './project-sheet'
@@ -53,9 +54,12 @@ export function Cabinet() {
   const [tweaksOpen, setTweaksOpen] = useState(false)
   const [railOpen, setRailOpen] = useState<'projects' | 'sprint' | 'tasks'>('sprint')
   const [clock, setClock] = useState('')
-  const snapshot = useJiraSnapshot()
+  const { snapshot, loading: jiraLoading } = useJiraSnapshot()
   const queryClient = useQueryClient()
-  useTeamSync()
+  const { loading: sheetLoading } = useTeamSync()
+
+  // 開機載入畫面：載完後輸入密碼放行（latch，refetch 不會再出現）
+  const [booted, setBooted] = useState(false)
 
   // Letterbox scaler
   useEffect(() => {
@@ -174,6 +178,13 @@ export function Cabinet() {
   return (
     <div className='hq-stage'>
       <div ref={scalerRef} className='hq-scaler'>
+        {!booted && (
+          <LoadingScreen
+            jiraDone={!jiraLoading}
+            sheetDone={!sheetLoading}
+            onUnlock={() => setBooted(true)}
+          />
+        )}
         <div className={`cabinet${tweaks.idle === 'off' ? ' noidle' : ''}`}>
           <TitleBar
             lang={lang}
