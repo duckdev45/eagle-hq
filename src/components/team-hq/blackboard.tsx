@@ -21,8 +21,9 @@ const fmtDate = (iso: string | null) => {
   return `${d.getMonth() + 1}/${d.getDate()}`
 }
 
+/* story 本身完成、或其 sprint 子 task 全數達 DEV VERIFY 以上 → 顯示已完成 */
 const lineType = (i: SprintHealth['issues'][number]): SprintItemType =>
-  i.status === STATUS_DONE ? 'done' : i.light === 'red' ? 'warn' : 'doing'
+  i.status === STATUS_DONE || i.devDone ? 'done' : i.light === 'red' ? 'warn' : 'doing'
 
 export function Blackboard({ sprint, jiraSprint, led, lang, open, onToggle }: BlackboardProps) {
   const t = HQ_I18N[lang]

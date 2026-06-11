@@ -94,7 +94,9 @@ async function agileGet<T>(cfg: JiraConfig, path: string): Promise<T> {
 }
 
 /** latest sprint on the project's board (active preferred, else newest future) + its issues */
-export async function fetchLatestSprint(cfg: JiraConfig): Promise<{ sprint: RawSprint; issues: RawJiraIssue[] } | null> {
+export async function fetchLatestSprint(
+  cfg: JiraConfig
+): Promise<{ sprint: RawSprint; issues: RawJiraIssue[]; subtasks: RawJiraIssue[] } | null> {
   const boards = await agileGet<{ values: { id: number }[] }>(
     cfg,
     `/rest/agile/1.0/board?projectKeyOrId=${encodeURIComponent(cfg.projectKey)}`
@@ -110,9 +112,57 @@ export async function fetchLatestSprint(cfg: JiraConfig): Promise<{ sprint: RawS
   if (list.length === 0) return null
   const sprint = list.find((s) => s.state === 'active') ?? list[list.length - 1]
 
-  // subtasks excluded — matches the work-item count shown in Jira's backlog view
-  const issues = await searchJql(cfg, `sprint = ${sprint.id} AND issuetype not in subTaskIssueTypes()`)
-  return { sprint, issues }
+  // work items and subtasks fetched separately — issue counts still match Jira's backlog view
+  const [issues, subtasks] = await Promise.all([
+    searchJql(cfg, `sprint = ${sprint.id} AND issuetype not in subTaskIssueTypes()`),
+    searchJql(cfg, `sprint = ${sprint.id} AND issuetype in subTaskIssueTypes() ORDER BY parent ASC`),
+  ])
+  return { sprint, issues, subtasks }
+}
+
+interface RawTransition {
+  id: string
+  name: string
+  to: { name: string }
+}
+
+export type TransitionResult =
+  | { ok: true; status: string }
+  | { ok: false; error: string; available?: string[] }
+
+/** move an issue to the workflow status whose name matches targetStatus (case-insensitive) */
+export async function transitionIssue(cfg: JiraConfig, issueKey: string, targetStatus: string): Promise<TransitionResult> {
+  const url = `${cfg.baseUrl}/rest/api/3/issue/${encodeURIComponent(issueKey)}/transitions`
+  const headers = { Authorization: authHeader(cfg), 'Content-Type': 'application/json' }
+
+  const listRes = await fetch(url, { headers, cache: 'no-store' })
+  if (!listRes.ok) {
+    const body = await listRes.text()
+    return { ok: false, error: `fetch transitions failed (${listRes.status}): ${body.slice(0, 200)}` }
+  }
+  const { transitions = [] } = (await listRes.json()) as { transitions?: RawTransition[] }
+
+  const want = targetStatus.toUpperCase()
+  const target = transitions.find((t) => t.to.name.toUpperCase() === want)
+  if (!target) {
+    return {
+      ok: false,
+      error: `no transition to "${targetStatus}" from current status`,
+      available: transitions.map((t) => t.to.name),
+    }
+  }
+
+  const doRes = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ transition: { id: target.id } }),
+    cache: 'no-store',
+  })
+  if (!doRes.ok) {
+    const body = await doRes.text()
+    return { ok: false, error: `transition failed (${doRes.status}): ${body.slice(0, 200)}` }
+  }
+  return { ok: true, status: target.to.name }
 }
 
 /**

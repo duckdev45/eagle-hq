@@ -1,7 +1,7 @@
 import 'server-only'
 
-import type { EpicHealth, HealthLight, JiraIssueLite, JiraSnapshot, MemberLoad, SprintHealth } from '@/types/jira'
-import { STATUS_DONE } from '@/types/jira'
+import type { EpicHealth, HealthLight, JiraIssueLite, JiraSnapshot, MemberLoad, SprintHealth, SprintTask } from '@/types/jira'
+import { STATUS_DONE, isDevDone } from '@/types/jira'
 import type { RawJiraIssue, RawSprint } from '@/server/jira'
 
 /* Jira assignee displayName → office member id（'自動' 是 bot，不對應人） */
@@ -119,11 +119,46 @@ function aggregateMembers(epics: EpicHealth[]): MemberLoad[] {
 }
 
 function judgeSprint(
-  raw: { sprint: RawSprint; issues: RawJiraIssue[] } | null,
-  judge: (issue: RawJiraIssue) => JiraIssueLite
+  raw: { sprint: RawSprint; issues: RawJiraIssue[]; subtasks: RawJiraIssue[] } | null,
+  judge: (issue: RawJiraIssue) => JiraIssueLite,
+  epicSummaries: Map<string, string>
 ): SprintHealth | null {
   if (!raw) return null
-  const issues = raw.issues.map(judge)
+
+  const storySummary = new Map(raw.issues.map((i) => [i.key, i.fields.summary]))
+  const storyEpic = new Map(raw.issues.map((i) => [i.key, i.fields.parent?.key]))
+
+  const tasks: SprintTask[] = raw.subtasks.map((t) => {
+    const assignee = t.fields.assignee?.displayName ?? null
+    const parentKey = t.fields.parent?.key ?? null
+    const epicKey = parentKey ? storyEpic.get(parentKey) : undefined
+    return {
+      key: t.key,
+      summary: t.fields.summary,
+      status: t.fields.status.name,
+      assignee,
+      memberId: assignee ? ASSIGNEE_TO_MEMBER[assignee] ?? null : null,
+      parentKey,
+      parentSummary: parentKey ? storySummary.get(parentKey) ?? null : null,
+      epicSummary: epicKey ? epicSummaries.get(epicKey) ?? null : null,
+    }
+  })
+
+  const byParent = new Map<string, SprintTask[]>()
+  for (const t of tasks) {
+    if (!t.parentKey) continue
+    const list = byParent.get(t.parentKey) ?? []
+    list.push(t)
+    byParent.set(t.parentKey, list)
+  }
+
+  const issues = raw.issues.map((i) => {
+    const lite = judge(i)
+    const subs = byParent.get(i.key) ?? []
+    if (subs.length > 0 && subs.every((t) => isDevDone(t.status))) lite.devDone = true
+    return lite
+  })
+
   return {
     id: raw.sprint.id,
     name: raw.sprint.name,
@@ -133,11 +168,12 @@ function judgeSprint(
     endDate: raw.sprint.endDate ?? null,
     counts: {
       total: issues.length,
-      done: issues.filter((i) => i.status === STATUS_DONE).length,
+      done: issues.filter((i) => i.status === STATUS_DONE || i.devDone).length,
       red: issues.filter((i) => i.light === 'red').length,
       yellow: issues.filter((i) => i.light === 'yellow').length,
     },
     issues,
+    tasks,
   }
 }
 
@@ -146,7 +182,7 @@ export function buildSnapshot(input: {
   baseUrl: string
   epics: RawJiraIssue[]
   children: RawJiraIssue[]
-  sprint?: { sprint: RawSprint; issues: RawJiraIssue[] } | null
+  sprint?: { sprint: RawSprint; issues: RawJiraIssue[]; subtasks: RawJiraIssue[] } | null
   stuckTbc: Set<string>
   stuckVerify: Set<string>
   tbcStuckDays: number
@@ -183,6 +219,10 @@ export function buildSnapshot(input: {
     },
     epics,
     members: aggregateMembers(epics),
-    sprint: judgeSprint(input.sprint ?? null, judge),
+    sprint: judgeSprint(
+      input.sprint ?? null,
+      judge,
+      new Map(input.epics.map((e) => [e.key, e.fields.summary]))
+    ),
   }
 }

@@ -2,11 +2,11 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 import { PROJ_DEF, SEED_LOGS, SEED_PROJECTS, SEED_TEAM, SEED_TWEAKS } from '@/data/seed'
-import type { Lang, LogEntry, Project, TeamMember, Tweaks } from '@/types/team'
+import type { Lang, LogEntry, Project, RemoteTeamState, TeamMember, Tweaks } from '@/types/team'
 
 const LS_KEY = 'eagle_hq_state_v1'
 
-const MUT_KEYS: (keyof TeamMember)[] = ['task', 'task_en', 'status', 'note', 'note_en', 'leaveUntil', 'updated_at']
+const MUT_KEYS: (keyof TeamMember)[] = ['task', 'task_en', 'taskKey', 'status', 'note', 'note_en', 'leaveUntil', 'updated_at']
 
 interface TeamState {
   team: TeamMember[]
@@ -17,6 +17,7 @@ interface TeamState {
   syncTs: string
 
   updateMember: (id: string, patch: Partial<TeamMember>) => void
+  applyRemote: (remote: RemoteTeamState) => void
   saveProject: (origId: string | null, patch: Omit<Project, 'stat' | 'stat_en'> & { light: Project['light'] }) => void
   deleteProject: (id: string) => void
   addLog: (id: string, text: string, lang: Lang) => void
@@ -41,6 +42,44 @@ export const useTeamStore = create<TeamState>()(
             m.id === id ? { ...m, ...patch, updated_at: new Date().toISOString() } : m
           ),
         }))
+      },
+
+      applyRemote: ({ statuses, logs }) => {
+        const today = new Date().toISOString().slice(0, 10)
+        set((s) => {
+          /* 狀態：updated_at 較新者為準（雙向同步的衝突解法） */
+          const byId = new Map(statuses.map((r) => [r.id, r]))
+          const team = s.team.map((m) => {
+            const r = byId.get(m.id)
+            if (!r || !r.updated_at || r.updated_at <= m.updated_at) return m
+            return {
+              ...m,
+              status: r.status || m.status,
+              task: r.task,
+              task_en: r.task_en,
+              taskKey: r.taskKey,
+              note: r.note,
+              note_en: r.note_en,
+              leaveUntil: r.leaveUntil,
+              updated_at: r.updated_at,
+            }
+          })
+
+          /* 日誌：Sheet 為歷史來源，僅保留今日尚未同步完成的本地較新項 */
+          const merged = new Map<string, LogEntry>()
+          for (const l of logs) merged.set(`${l.id}|${l.date}`, l)
+          for (const l of s.logs) {
+            if (l.date !== today) continue
+            const key = `${l.id}|${l.date}`
+            const r = merged.get(key)
+            if (!r || (l.created_at ?? '') > (r.created_at ?? '')) merged.set(key, l)
+          }
+          const mergedLogs = [...merged.values()].sort((a, b) =>
+            a.date === b.date ? (a.created_at ?? '') < (b.created_at ?? '') ? 1 : -1 : a.date < b.date ? 1 : -1
+          )
+
+          return { team, logs: mergedLogs }
+        })
       },
 
       saveProject: (origId, patch) => {

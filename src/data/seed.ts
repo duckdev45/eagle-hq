@@ -34,7 +34,7 @@ export const SEED_TEAM: TeamMember[] = [
     id: 'wesley', name: 'WESLEY', role: '建築師 · Boss', role_en: 'Architect · Boss',
     avatar: '/avatars/wesley.png', x: 17, y: 15, status: '查閱中',
     task: '巡視各專案燈號', task_en: 'Scan project signals',
-    note: '只看紅燈，其餘交給團隊', note_en: 'Only acts on red lights',
+    note: 'review', note_en: 'Only acts on red lights',
     updated_at: '2026-06-09T09:12:00',
   },
   {
@@ -47,22 +47,22 @@ export const SEED_TEAM: TeamMember[] = [
   {
     id: 'lee', name: 'LEE', role: '後端 · Team Lead', role_en: 'Backend · Team Lead',
     avatar: '/avatars/lee.png', x: 83, y: 15, status: '施工中',
-    task: 'site-report API 串接', task_en: 'Wiring site-report API',
-    note: '今天可完成匯出端點', note_en: 'Export endpoint should land today',
+    task: 'site-report API 串接', task_en: '',
+    note: '', note_en: '',
     updated_at: '2026-06-09T10:48:00',
   },
   {
     id: 'jared', name: 'JARED', role: 'UI / UX', role_en: 'UI / UX',
     avatar: '/avatars/jared.png', x: 30, y: 56, status: '驗收中',
-    task: 'app-onsite 拍照流程驗收', task_en: 'Reviewing capture flow',
-    note: '等 Duck 修兩個對齊', note_en: 'Waiting on 2 alignment fixes',
+    task: 'app-onsite 拍照流程驗收', task_en: '',
+    note: '', note_en: '',
     updated_at: '2026-06-09T11:05:00',
   },
   {
     id: 'duck', name: 'DUCK', role: '前端', role_en: 'Frontend',
-    avatar: '/avatars/duck.png', x: 66, y: 56, status: '被卡住',
-    task: 'data-training 標註介面', task_en: 'data-training labeling UI',
-    note: '廠商資料還沒進來，卡住了', note_en: 'Blocked — vendor data not in yet',
+    avatar: '/avatars/duck_right_2.png', x: 66, y: 56, status: '被卡住',
+    task: 'data-training 標註介面', task_en: '',
+    note: '', note_en: '',
     updated_at: '2026-06-09T11:30:00',
   },
 ]

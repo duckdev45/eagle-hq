@@ -23,6 +23,8 @@ export interface TeamMember {
   status: string
   task: string
   task_en: string
+  /* 對應的 Jira sprint task key（由下拉選擇） */
+  taskKey?: string
   note: string
   note_en: string
   updated_at: string
@@ -59,6 +61,24 @@ export interface LogEntry {
   done: string
   done_en?: string
   created_at?: string
+}
+
+/* Google Sheet 同步用：status 分頁的一列（每人最新狀態） */
+export interface RemoteMemberStatus {
+  id: string
+  status: string
+  task: string
+  task_en: string
+  taskKey: string
+  note: string
+  note_en: string
+  leaveUntil: string
+  updated_at: string
+}
+
+export interface RemoteTeamState {
+  statuses: RemoteMemberStatus[]
+  logs: LogEntry[]
 }
 
 export interface Tweaks {

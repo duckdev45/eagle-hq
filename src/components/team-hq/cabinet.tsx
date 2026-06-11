@@ -1,19 +1,23 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import type { Lang, Light, Project, TeamMember } from '@/types/team'
 import type { MemberLoad } from '@/types/jira'
 import { FLOOR_THEMES, SEED_SPRINT, STATUS } from '@/data/seed'
 import { useJiraSnapshot } from '@/hooks/use-jira-snapshot'
+import { pushTeamState, toRemoteStatus, useTeamSync } from '@/hooks/use-team-sync'
 import { useTeamStore } from '@/store/team.store'
 
 import { Blackboard } from './blackboard'
 import { DailyLog } from './daily-log'
-import { MemberSheet } from './member-sheet'
+import { MemberSheet, type JiraTransitionReq } from './member-sheet'
 import { ProjectBoard } from './project-board'
 import { ProjectSheet } from './project-sheet'
 import { Room } from './room'
+import { TaskBoard } from './task-board'
+import { TeamLog } from './team-log'
 import { TitleBar } from './title-bar'
 import { TweaksPanel } from './tweaks-panel'
 
@@ -45,10 +49,13 @@ export function Cabinet() {
   const [pickProject, setPickProject] = useState<string | null>(null)
   const [newProj, setNewProj] = useState(false)
   const [logOpen, setLogOpen] = useState(false)
+  const [teamLogOpen, setTeamLogOpen] = useState(false)
   const [tweaksOpen, setTweaksOpen] = useState(false)
-  const [railOpen, setRailOpen] = useState<'projects' | 'sprint'>('sprint')
+  const [railOpen, setRailOpen] = useState<'projects' | 'sprint' | 'tasks'>('sprint')
   const [clock, setClock] = useState('')
   const snapshot = useJiraSnapshot()
+  const queryClient = useQueryClient()
+  useTeamSync()
 
   // Letterbox scaler
   useEffect(() => {
@@ -101,9 +108,37 @@ export function Cabinet() {
     updateSyncTs(`${p(d.getHours())}:${p(d.getMinutes())}`)
   }
 
-  const handleSaveMember = (id: string, patch: Partial<TeamMember>, daily: string) => {
+  const handleSaveMember = async (
+    id: string,
+    patch: Partial<TeamMember>,
+    daily: string,
+    transition: JiraTransitionReq | null
+  ) => {
+    if (transition) {
+      try {
+        const res = await fetch('/api/jira/transition', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(transition),
+        })
+        if (!res.ok) {
+          const data = (await res.json().catch(() => null)) as { error?: string; available?: string[] } | null
+          const hint = data?.available?.length ? `\n${lang === 'zh' ? '可用狀態' : 'Available'}: ${data.available.join(', ')}` : ''
+          alert(`${lang === 'zh' ? 'Jira 回寫失敗' : 'Jira write-back failed'}: ${data?.error ?? res.status}${hint}`)
+          return
+        }
+        await queryClient.invalidateQueries({ queryKey: ['jira-snapshot'] })
+      } catch {
+        alert(lang === 'zh' ? 'Jira 回寫失敗：連線錯誤' : 'Jira write-back failed: network error')
+        return
+      }
+    }
     updateMember(id, patch)
     if (daily) addLog(id, daily, lang)
+    const st = useTeamStore.getState()
+    const me = st.team.find((m) => m.id === id)
+    const log = daily ? st.logs.find((l) => l.id === id && l.date === today) : undefined
+    pushTeamState({ statuses: me ? [toRemoteStatus(me)] : [], logs: log ? [log] : [] })
     nowSync()
     setPickMember(null)
   }
@@ -123,6 +158,8 @@ export function Cabinet() {
 
   const handleSaveLog = (id: string, text: string) => {
     addLog(id, text, lang)
+    const log = useTeamStore.getState().logs.find((l) => l.id === id && l.date === today)
+    pushTeamState({ logs: log ? [log] : [] })
     nowSync()
   }
 
@@ -152,6 +189,7 @@ export function Cabinet() {
               theme={theme}
               lang={lang}
               onOpenLog={() => setLogOpen(true)}
+              onOpenTeamLog={() => setTeamLogOpen(true)}
               loggedToday={loggedToday}
               bossNote={bossNote}
             />
@@ -162,6 +200,7 @@ export function Cabinet() {
                 onPickEpic={(key) => window.open(`${snapshot!.baseUrl}/browse/${key}`, '_blank', 'noopener')}
                 onPick={setPickProject}
                 onAdd={() => setNewProj(true)}
+                led={tweaks.board === 'led'}
                 lang={lang}
                 open={railOpen === 'projects'}
                 onToggle={() => setRailOpen('projects')}
@@ -174,12 +213,23 @@ export function Cabinet() {
                 open={railOpen === 'sprint'}
                 onToggle={() => setRailOpen('sprint')}
               />
+              {(snapshot?.sprint?.tasks?.length ?? 0) > 0 && (
+                <TaskBoard
+                  sprint={snapshot!.sprint!}
+                  team={team}
+                  led={tweaks.board === 'led'}
+                  lang={lang}
+                  open={railOpen === 'tasks'}
+                  onToggle={() => setRailOpen('tasks')}
+                />
+              )}
             </div>
           </div>
 
           {mSel && (
             <MemberSheet
               m={mSel}
+              tasks={(snapshot?.sprint?.tasks ?? []).filter((tk) => tk.memberId === mSel.id)}
               todayLog={myTodayLog(mSel.id)}
               lang={lang}
               onSave={handleSaveMember}
@@ -202,6 +252,14 @@ export function Cabinet() {
               lang={lang}
               onSave={handleSaveProject}
               onClose={() => setNewProj(false)}
+            />
+          )}
+          {teamLogOpen && (
+            <TeamLog
+              team={team}
+              logs={logs}
+              lang={lang}
+              onClose={() => setTeamLogOpen(false)}
             />
           )}
           {logOpen && (

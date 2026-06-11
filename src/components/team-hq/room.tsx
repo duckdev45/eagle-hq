@@ -30,13 +30,14 @@ interface RoomProps {
   theme: FloorThemeDef
   lang: Lang
   onOpenLog: () => void
+  onOpenTeamLog: () => void
   loggedToday: number
   bossNote?: string | null
 }
 
 const MOVE_KEYS = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd']
 
-export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday, bossNote }: RoomProps) {
+export function Room({ team, onPick, theme, lang, onOpenLog, onOpenTeamLog, loggedToday, bossNote }: RoomProps) {
   const t = HQ_I18N[lang]
   const roomRef = useRef<HTMLDivElement>(null)
   const containerRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -184,18 +185,23 @@ export function Room({ team, onPick, theme, lang, onOpenLog, loggedToday, bossNo
         <span className='ptxt'>EAGLE</span>
       </div>
 
-      {/* furniture */}
-      {OFFICE_ITEMS.map((it) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={it.id}
-          className='office-item'
-          src={`/items/office_items/${it.img}.png`}
-          alt={it.img}
-          style={{ left: it.x, top: it.y, width: it.w, height: it.h, zIndex: it.z ?? zOf(it.y + it.h - SPRITE_H) }}
-          draggable={false}
-        />
-      ))}
+      {/* furniture（牆上時鐘可點 → 團隊期間 log） */}
+      {OFFICE_ITEMS.map((it) => {
+        const isWallClock = it.id === 'wall-clock'
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={it.id}
+            className={`office-item${isWallClock ? ' clickable' : ''}`}
+            src={`/items/office_items/${it.img}.png`}
+            alt={it.img}
+            style={{ left: it.x, top: it.y, width: it.w, height: it.h, zIndex: it.z ?? zOf(it.y + it.h - SPRITE_H) }}
+            draggable={false}
+            onClick={isWallClock ? (e) => { e.stopPropagation(); onOpenTeamLog() } : undefined}
+            title={isWallClock ? t.teamLog : undefined}
+          />
+        )
+      })}
 
       {/* boss summary on the whiteboard (furniture at 300,20 130×84) */}
       {bossNote && (
