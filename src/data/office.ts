@@ -14,19 +14,19 @@ export const OFFICE_ITEMS: OfficeItemDef[] = [
     // wall
     {id: 'window-a', img: 'window', x: 40, y: 22, w: 106, h: 84},
     {id: 'whiteboard', img: 'whiteboard', x: 300, y: 20, w: 130, h: 84},
-    {id: 'wall-clock', img: 'wall_clock', x: 520, y: 30, w: 42, h: 42},
-    {id: 'window-b', img: 'window', x: 640, y: 22, w: 106, h: 84},
+    {id: 'wall-clock', img: 'wall_clock', x: 520, y: 20, w: 42, h: 42},
+    {id: 'map', img: 'world_map', x: 640, y: 22, w: 135, h: 80},
 
     // desks + chairs (one per member)
-    {id: 'desk-wesley', img: 'office_desk', x: 150, y: 160, w: 130, h: 108, solid: true},
-    {id: 'chair-wesley', img: 'chair_red', x: 165, y: 245, w: 50, h: 82, solid: true},
-    {id: 'desk-margaret', img: 'office_desk', x: 430, y: 160, w: 130, h: 108, solid: true},
-    {id: 'chair-margaret', img: 'chair_blue', x: 445, y: 245, w: 50, h: 82, solid: true},
-    {id: 'desk-lee', img: 'office_desk', x: 670, y: 160, w: 130, h: 108, solid: true},
+    {id: 'desk-wesley', img: 'mac_code_desk', x: 150, y: 160, w: 130, h: 108, solid: true},
+    {id: 'chair-wesley', img: 'chair_black', x: 165, y: 245, w: 50, h: 82, solid: true},
+    {id: 'desk-margaret', img: 'mac_code_desk', x: 430, y: 160, w: 130, h: 108, solid: true},
+    {id: 'chair-margaret', img: 'chair_black', x: 445, y: 245, w: 50, h: 82, solid: true},
+    {id: 'desk-lee', img: 'multi_monitor_desk', x: 670, y: 160, w: 130, h: 108, solid: true},
     {id: 'chair-lee', img: 'chair_black', x: 685, y: 245, w: 50, h: 82, solid: true},
-    {id: 'desk-jared', img: 'office_desk', x: 240, y: 415, w: 130, h: 108, solid: true},
-    {id: 'chair-jared', img: 'chair_blue', x: 255, y: 500, w: 50, h: 82, solid: true},
-    {id: 'desk-duck', img: 'office_desk', x: 520, y: 415, w: 130, h: 108, solid: true},
+    {id: 'desk-jared', img: 'mac_code_desk', x: 240, y: 415, w: 130, h: 108, solid: true},
+    {id: 'chair-jared', img: 'chair_black', x: 255, y: 500, w: 50, h: 82, solid: true},
+    {id: 'desk-duck', img: 'multi_monitor_desk', x: 520, y: 415, w: 130, h: 108, solid: true},
     {id: 'chair-duck', img: 'chair_black_puppy', x: 490, y: 490, w: 120, h: 100, solid: true},
 
     // floor furniture
@@ -41,6 +41,7 @@ export const OFFICE_ITEMS: OfficeItemDef[] = [
     {id: 'conference-table', img: 'conference_table', x: 740, y: 440, w: 214, h: 110, solid: true},
     {id: 'water-dispenser', img: 'water_dispenser', x: 580, y: 40, w: 60, h: 106, solid: true},
     {id: 'coffee-machine', img: 'coffee_machine', x: 30, y: 460, w: 96, h: 72, solid: true},
+    {id: 'polaroid-camera', img: 'polaroid_camera', x: 870, y: 455, w: 45, h: 45, solid: true, z: 21},
 ]
 
 export const PUNCH_CLOCK: OfficeItemDef = {
@@ -66,10 +67,10 @@ export const FRAME_COUNT: Record<string, number> = {
 /* each member starts standing just right of their own chair */
 export const MEMBER_START: Record<string, { x: number; y: number }> = {
     wesley: {x: 80, y: 192},
-    margaret: {x: 530, y: 200},
-    lee: {x: 760, y: 200},
-    jared: {x: 320, y: 470},
-    duck: {x: 600, y: 470},
+    margaret: {x: 540, y: 200},
+    lee: {x: 780, y: 200},
+    jared: {x: 340, y: 470},
+    duck: {x: 640, y: 470},
 }
 
 export type Dir = 'up' | 'down' | 'left' | 'right'

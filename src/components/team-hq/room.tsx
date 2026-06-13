@@ -32,13 +32,14 @@ interface RoomProps {
     onOpenLog: () => void
     onOpenTeamLog: () => void
     onOpenBacklog: () => void
+    onOpenAlbum: () => void
     loggedToday: number
     bossNote?: string | null
 }
 
 const MOVE_KEYS = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd']
 
-export function Room({team, onPick, theme, lang, onOpenLog, onOpenTeamLog, onOpenBacklog, loggedToday, bossNote}: RoomProps) {
+export function Room({team, onPick, theme, lang, onOpenLog, onOpenTeamLog, onOpenBacklog, onOpenAlbum, loggedToday}: RoomProps) {
     const t = HQ_I18N[lang]
     const roomRef = useRef<HTMLDivElement>(null)
     const containerRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -207,13 +208,14 @@ export function Room({team, onPick, theme, lang, onOpenLog, onOpenTeamLog, onOpe
                 <span className='ptxt'>EAGLE</span>
             </div>
 
-            {/* furniture（牆上時鐘可點 → 團隊期間 log；置物櫃可點 → backlog） */}
+            {/* furniture（牆上時鐘可點 → 團隊期間 log；置物櫃可點 → backlog；相機可點 → 相簿） */}
             {OFFICE_ITEMS.map((it) => {
                 const isWallClock = it.id === 'wall-clock'
                 const isLocker = it.id === 'locker'
-                const label = isWallClock ? 'log' : isLocker ? 'backlog' : null
+                const isCamera = it.id === 'polaroid-camera'
+                const label = isWallClock ? 'log' : isLocker ? 'backlog' : isCamera ? 'album' : null
                 const z = it.z ?? zOf(it.y + it.h - SPRITE_H)
-                const open = isWallClock ? onOpenTeamLog : isLocker ? onOpenBacklog : null
+                const open = isWallClock ? onOpenTeamLog : isLocker ? onOpenBacklog : isCamera ? onOpenAlbum : null
                 return (
                     <React.Fragment key={it.id}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -227,7 +229,7 @@ export function Room({team, onPick, theme, lang, onOpenLog, onOpenTeamLog, onOpe
                                 e.stopPropagation();
                                 open()
                             } : undefined}
-                            title={isWallClock ? t.teamLog : isLocker ? t.backlog : undefined}
+                            title={isWallClock ? t.teamLog : isLocker ? t.backlog : isCamera ? t.photoAlbum : undefined}
                         />
                         {label && (
                             <div className='item-lbl lbl-glow'
@@ -238,13 +240,6 @@ export function Room({team, onPick, theme, lang, onOpenLog, onOpenTeamLog, onOpe
                     </React.Fragment>
                 )
             })}
-
-            {/* boss summary on the whiteboard (furniture at 300,20 130×84) */}
-            {bossNote && (
-                <div className='wb-note' style={{left: 308, top: 32, width: 114}}>
-                    {bossNote}
-                </div>
-            )}
 
             {/* office cats */}
             <div className='cat cat-orange' style={{left: '9%', top: '60%', zIndex: 5}}>

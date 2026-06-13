@@ -11,6 +11,7 @@ import { pushTeamState, toRemoteStatus, useTeamSync } from '@/hooks/use-team-syn
 import { useTeamStore } from '@/store/team.store'
 
 import { BacklogSheet } from './backlog-sheet'
+import { PhotoAlbum } from './photo-album'
 import { Blackboard } from './blackboard'
 import { DailyLog } from './daily-log'
 import { LoadingScreen } from './loading-screen'
@@ -53,6 +54,7 @@ export function Cabinet() {
   const [logOpen, setLogOpen] = useState(false)
   const [teamLogOpen, setTeamLogOpen] = useState(false)
   const [backlogOpen, setBacklogOpen] = useState(false)
+  const [albumOpen, setAlbumOpen] = useState(false)
   const [tweaksOpen, setTweaksOpen] = useState(false)
   const [railOpen, setRailOpen] = useState<'projects' | 'sprint' | 'tasks'>('sprint')
   const [clock, setClock] = useState('')
@@ -204,8 +206,8 @@ export function Cabinet() {
               onOpenLog={() => setLogOpen(true)}
               onOpenTeamLog={() => setTeamLogOpen(true)}
               onOpenBacklog={() => setBacklogOpen(true)}
+              onOpenAlbum={() => setAlbumOpen(true)}
               loggedToday={loggedToday}
-              bossNote={bossNote}
             />
             <div className='rail'>
               <ProjectBoard
@@ -266,6 +268,12 @@ export function Cabinet() {
               lang={lang}
               onSave={handleSaveProject}
               onClose={() => setNewProj(false)}
+            />
+          )}
+          {albumOpen && (
+            <PhotoAlbum
+              lang={lang}
+              onClose={() => setAlbumOpen(false)}
             />
           )}
           {backlogOpen && (
