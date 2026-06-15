@@ -20,8 +20,8 @@ export function MemberSprite({ m, lang, selected, onSelect, onOpen, setContainer
   const leave = meta.kind === 'leave'
   const zh = lang === 'zh'
   const stLabel = zh ? m.status : meta.en
-  const task = zh ? m.task : (m.task_en || m.task)
-  const back = m.leaveUntil ? (zh ? ` · ${m.leaveUntil} 回來` : ` · back ${m.leaveUntil}`) : ''
+  const task = m.task
+  const back = m.leaveUntil ? ` · ${m.leaveUntil} 回來` : ''
   const start = MEMBER_START[m.id] ?? { x: 480, y: 300 }
 
   const cls = [

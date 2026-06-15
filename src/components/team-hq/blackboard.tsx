@@ -46,7 +46,7 @@ export function Blackboard({ sprint, jiraSprint, led, lang, open, onToggle }: Bl
                   <span className='w1'>{jiraSprint.name}</span>
                   <span className='w2'>
                     {fmtDate(jiraSprint.startDate)} – {fmtDate(jiraSprint.endDate)} ·{' '}
-                    {jiraSprint.counts.done}/{jiraSprint.counts.total} {zh ? '完成' : 'done'}
+                    {jiraSprint.counts.done}/{jiraSprint.counts.total} 完成
                   </span>
                 </div>
                 {jiraSprint.issues.map((i) => {
@@ -66,13 +66,13 @@ export function Blackboard({ sprint, jiraSprint, led, lang, open, onToggle }: Bl
               <>
                 <div className='wk'>
                   <span className='w1'>{sprint.week}</span>
-                  <span className='w2'>{zh ? sprint.end : sprint.end_en}</span>
+                  <span className='w2'>{sprint.end}</span>
                 </div>
                 {sprint.items.map((it, i) => (
                   <div key={i} className={`line ${it.type}`}>
                     <span className='sym'>{SYM[it.type]}</span>
                     <span className='txt'>
-                      {zh ? it.txt : it.txt_en}{' '}
+                      {it.txt}{' '}
                       <span className='tag'>[{it.tag}]</span>
                     </span>
                   </div>

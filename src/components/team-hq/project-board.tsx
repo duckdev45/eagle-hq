@@ -50,16 +50,12 @@ export function ProjectBoard({ projects, epics, onPickEpic, onPick, onAdd, led, 
             <div className={`chalk-area${led ? ' led' : ''}`}>
               <div className='wk'>
                 <span className='w1'>{epics.length} EPIC</span>
-                <span className='w2'>{greens}/{epics.length} {zh ? '綠燈' : 'green'}</span>
+                <span className='w2'>{greens}/{epics.length} 綠燈</span>
               </div>
               {reds.length > 0 && (
                 <div className='line warn'>
                   <span className='sym'>!</span>
-                  <span className='txt'>
-                    {zh
-                      ? `${reds.length} ${t.needHead} PM ${t.needTail}`
-                      : `${reds.length} need PM's call`}
-                  </span>
+                  <span className='txt'>{reds.length} {t.needHead} PM {t.needTail}</span>
                 </div>
               )}
               {epics.map((e) => {
@@ -82,10 +78,7 @@ export function ProjectBoard({ projects, epics, onPickEpic, onPick, onAdd, led, 
             <>
               {reds.length > 0 && (
                 <div className='r-banner'>
-                  <b>● {reds.length}</b>
-                  {zh
-                    ? <> {t.needHead} PM {t.needTail}</>
-                    : <> need PM&apos;s call</>}
+                  <b>● {reds.length}</b> {t.needHead} PM {t.needTail}
                 </div>
               )}
               {projects.map((p) => (
@@ -94,12 +87,12 @@ export function ProjectBoard({ projects, epics, onPickEpic, onPick, onAdd, led, 
                   <div className='pinfo'>
                     <div className='pname'>{p.id}</div>
                     <div className='pstat'>
-                      {LAMP_TXT[p.light]}{zh ? p.stat : (p.stat_en || p.stat)}
+                      {LAMP_TXT[p.light]}{p.stat}
                     </div>
                   </div>
                   <div className='pdue'>{p.due}</div>
                   {p.light !== 'g' && (
-                    <div className='note'>{zh ? p.note : (p.note_en || p.note)}</div>
+                    <div className='note'>{p.note}</div>
                   )}
                 </div>
               ))}

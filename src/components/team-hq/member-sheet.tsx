@@ -57,13 +57,13 @@ export function MemberSheet({ m, tasks, todayLog, lang, onSave, onClose }: Membe
   const zh = lang === 'zh'
   const initialKey = m.taskKey && tasks.some((tk) => tk.key === m.taskKey) ? m.taskKey : ''
   const [taskKey, setTaskKey] = useState(initialKey)
-  const [task, setTask] = useState(zh ? m.task : (m.task_en || m.task))
+  const [task, setTask] = useState(m.task)
   const [status, setStatus] = useState(m.status)
   const [progress, setProgress] = useState(() => {
     const sel = tasks.find((tk) => tk.key === initialKey)
     return sel ? toProgress(sel.status) : STATUS_TODO
   })
-  const [note, setNote] = useState((zh ? m.note : (m.note_en ?? m.note)) || '')
+  const [note, setNote] = useState(m.note || '')
   const [until, setUntil] = useState(m.leaveUntil || '')
   const [daily, setDaily] = useState(todayLog)
   const [busy, setBusy] = useState(false)
@@ -76,7 +76,7 @@ export function MemberSheet({ m, tasks, todayLog, lang, onSave, onClose }: Membe
   const progressChanged = !!selTask && toProgress(selTask.status) !== progress
   const progressLabel = PROGRESS_OPTS.find((p) => p.value === progress)
   const logEntry = selTask && progressChanged && progressLabel
-    ? `${selTask.summary} → ${zh ? progressLabel.zh : progressLabel.en}`
+    ? `${selTask.summary} → ${progressLabel.zh}`
     : ''
 
   const statusOptions = STATUS_ORDER.map((s) => ({
@@ -117,8 +117,7 @@ export function MemberSheet({ m, tasks, todayLog, lang, onSave, onClose }: Membe
   const save = async () => {
     if (busy) return
     const patch: Partial<TeamMember> = { status, leaveUntil: isLeave ? until : '', taskKey }
-    if (zh) { patch.task = task; patch.note = note }
-    else { patch.task_en = task; patch.note_en = note }
+    patch.task = task; patch.note = note
 
     let dailyOut = daily.trim()
     if (logEntry) dailyOut = dailyOut ? `${dailyOut}；${logEntry}` : logEntry

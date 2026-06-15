@@ -173,7 +173,7 @@ export function Cabinet() {
 
   const myTodayLog = (id: string) => {
     const l = logs.find((x) => x.id === id && x.date === today)
-    return l ? (lang === 'zh' ? l.done : (l.done_en || l.done)) : ''
+    return l ? l.done : ''
   }
 
   const todayLogged = new Set(logs.filter((l) => l.date === today).map((l) => l.id))

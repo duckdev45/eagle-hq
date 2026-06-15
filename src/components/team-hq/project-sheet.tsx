@@ -31,7 +31,7 @@ export function ProjectSheet({ p, isNew, lang, onSave, onDelete, onClose }: Proj
   const zh = lang === 'zh'
   const [pid, setPid] = useState(p.id)
   const [light, setLight] = useState<Light>(p.light)
-  const [note, setNote] = useState(zh ? p.note : (p.note_en || p.note))
+  const [note, setNote] = useState(p.note)
   const [due, setDue] = useState(p.due)
 
   const signalOptions = [
@@ -42,8 +42,7 @@ export function ProjectSheet({ p, isNew, lang, onSave, onDelete, onClose }: Proj
 
   const save = () => {
     const id = (pid || '').trim() || 'new-project'
-    const patch = { id, light, due, note: '', note_en: '' }
-    if (zh) patch.note = note; else patch.note_en = note
+    const patch = { id, light, due, note, note_en: '' }
     onSave(isNew ? null : p.id, patch)
   }
 
