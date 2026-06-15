@@ -13,7 +13,7 @@ export interface PhotoEntry {
 export const TEAM_PHOTOS: PhotoEntry[] = [
   {
     id: '20260612-01',
-    src: '/photos/20260612/IMG_2202.JPG',
+    src: '/photos/20260612/IMG_2202.jpg',
     date: '2026-06-12',
     location: '台北 · 內湖',
     location_en: 'Taipei · Neihu',
@@ -23,7 +23,7 @@ export const TEAM_PHOTOS: PhotoEntry[] = [
   },
   {
     id: '20260612-02',
-    src: '/photos/20260612/IMG_2203.JPG',
+    src: '/photos/20260612/IMG_2203.jpg',
     date: '2026-06-12',
     location: '台北 · extension 1 by 橘色',
     location_en: 'Taipei · Extension 1 by Orange',
